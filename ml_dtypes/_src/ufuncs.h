@@ -35,7 +35,13 @@ namespace ml_dtypes {
 
 template <typename InType, typename OutType, typename Functor>
 struct UnaryUFunc {
-  static std::vector<int> Types() {
+  static std::vector<int> TypeNums() {
+    return {TypeDescriptor<InType>::legacy_type_num,
+            TypeDescriptor<OutType>::legacy_type_num};
+  }
+  static constexpr int kIn = 1;
+  static constexpr int kOut = 1;
+  static std::vector<PyArray_DTypeMeta*> Dtypes() {
     return {TypeDescriptor<InType>::Dtype(), TypeDescriptor<OutType>::Dtype()};
   }
   static void Call(char** args, const npy_intp* dimensions,
@@ -49,12 +55,24 @@ struct UnaryUFunc {
       o += steps[1];
     }
   }
+  static void StridedLoop(PyArrayMethod_Context* context, char** args,
+                          const npy_intp* dimensions, const npy_intp* steps,
+                          void* data) {
+    return Call(args, dimensions, steps, data);
+  }
 };
 
 template <typename InType, typename OutType, typename OutType2,
           typename Functor>
 struct UnaryUFunc2 {
-  static std::vector<int> Types() {
+  static std::vector<int> TypeNums() {
+    return {TypeDescriptor<InType>::legacy_type_num,
+            TypeDescriptor<OutType>::legacy_type_num,
+            TypeDescriptor<OutType2>::legacy_type_num};
+  }
+  static constexpr int kIn = 1;
+  static constexpr int kOut = 2;
+  static std::vector<PyArray_DTypeMeta*> Dtypes() {
     return {TypeDescriptor<InType>::Dtype(), TypeDescriptor<OutType>::Dtype(),
             TypeDescriptor<OutType2>::Dtype()};
   }
@@ -73,14 +91,27 @@ struct UnaryUFunc2 {
       o1 += steps[2];
     }
   }
+  static void StridedLoop(PyArrayMethod_Context* context, char** args,
+                          const npy_intp* dimensions, const npy_intp* steps,
+                          void* data) {
+    return Call(args, dimensions, steps, data);
+  }
 };
 
 template <typename InType, typename OutType, typename Functor>
 struct BinaryUFunc {
-  static std::vector<int> Types() {
+  static std::vector<int> TypeNums() {
+    return {TypeDescriptor<InType>::legacy_type_num,
+            TypeDescriptor<InType>::legacy_type_num,
+            TypeDescriptor<OutType>::legacy_type_num};
+  }
+  static constexpr int kIn = 2;
+  static constexpr int kOut = 1;
+  static std::vector<PyArray_DTypeMeta*> Dtypes() {
     return {TypeDescriptor<InType>::Dtype(), TypeDescriptor<InType>::Dtype(),
             TypeDescriptor<OutType>::Dtype()};
   }
+
   static void Call(char** args, const npy_intp* dimensions,
                    const npy_intp* steps, void* data) {
     const char* i0 = args[0];
@@ -96,11 +127,23 @@ struct BinaryUFunc {
       o += steps[2];
     }
   }
+  static void StridedLoop(PyArrayMethod_Context* context, char** args,
+                          const npy_intp* dimensions, const npy_intp* steps,
+                          void* data) {
+    return Call(args, dimensions, steps, data);
+  }
 };
 
 template <typename InType, typename InType2, typename OutType, typename Functor>
 struct BinaryUFunc2 {
-  static std::vector<int> Types() {
+  static std::vector<int> TypeNums() {
+    return {TypeDescriptor<InType>::legacy_type_num,
+            TypeDescriptor<InType2>::legacy_type_num,
+            TypeDescriptor<OutType>::legacy_type_num};
+  }
+  static constexpr int kIn = 2;
+  static constexpr int kOut = 1;
+  static std::vector<PyArray_DTypeMeta*> Dtypes() {
     return {TypeDescriptor<InType>::Dtype(), TypeDescriptor<InType2>::Dtype(),
             TypeDescriptor<OutType>::Dtype()};
   }
@@ -120,28 +163,65 @@ struct BinaryUFunc2 {
       o += steps[2];
     }
   }
+  static void StridedLoop(PyArrayMethod_Context* context, char** args,
+                          const npy_intp* dimensions, const npy_intp* steps,
+                          void* data) {
+    return Call(args, dimensions, steps, data);
+  }
 };
 
 template <typename UFunc, typename CustomT>
 bool RegisterUFunc(PyObject* numpy, const char* name) {
-  std::vector<int> types = UFunc::Types();
-  PyUFuncGenericFunction fn =
-      reinterpret_cast<PyUFuncGenericFunction>(UFunc::Call);
-  Safe_PyObjectPtr ufunc_obj = make_safe(PyObject_GetAttrString(numpy, name));
-  if (!ufunc_obj) {
-    return false;
-  }
-  PyUFuncObject* ufunc = reinterpret_cast<PyUFuncObject*>(ufunc_obj.get());
-  if (static_cast<int>(types.size()) != ufunc->nargs) {
-    PyErr_Format(PyExc_AssertionError,
-                 "ufunc %s takes %d arguments, loop takes %lu", name,
-                 ufunc->nargs, types.size());
-    return false;
-  }
-  if (PyUFunc_RegisterLoopForType(ufunc, TypeDescriptor<CustomT>::Dtype(), fn,
-                                  const_cast<int*>(types.data()),
-                                  nullptr) < 0) {
-    return false;
+  if (PyArray_RUNTIME_VERSION >= NPY_2_0_API_VERSION) {
+    PyObject* ufunc = PyObject_GetAttrString(numpy, name);
+    if (ufunc == nullptr) {
+      return false;
+    }
+
+    std::vector<PyArray_DTypeMeta*> dtypes = UFunc::Dtypes();
+
+    PyType_Slot slots[] = {
+        {NPY_METH_strided_loop, (void*)&UFunc::StridedLoop},
+        {0, nullptr},
+    };
+
+    std::string method_name = TypeDescriptor<CustomT>::kTypeName;
+    method_name += "_";
+    method_name += name;
+    PyArrayMethod_Spec spec = {
+        .name = method_name.c_str(),
+        .nin = UFunc::kIn,
+        .nout = UFunc::kOut,
+        .casting = NPY_NO_CASTING,
+        .flags = static_cast<NPY_ARRAYMETHOD_FLAGS>(0),
+        .dtypes = dtypes.data(),
+        .slots = slots,
+    };
+
+    if (PyUFunc_AddLoopFromSpec(ufunc, &spec) < 0) {
+      return false;
+    }
+    return true;
+  } else {
+    std::vector<int> types = UFunc::TypeNums();
+    PyUFuncGenericFunction fn =
+        reinterpret_cast<PyUFuncGenericFunction>(UFunc::Call);
+    Safe_PyObjectPtr ufunc_obj = make_safe(PyObject_GetAttrString(numpy, name));
+    if (!ufunc_obj) {
+      return false;
+    }
+    PyUFuncObject* ufunc = reinterpret_cast<PyUFuncObject*>(ufunc_obj.get());
+    if (static_cast<int>(types.size()) != ufunc->nargs) {
+      PyErr_Format(PyExc_AssertionError,
+                   "ufunc %s takes %d arguments, loop takes %lu", name,
+                   ufunc->nargs, types.size());
+      return false;
+    }
+    if (PyUFunc_RegisterLoopForType(
+            ufunc, TypeDescriptor<CustomT>::legacy_type_num, fn,
+            const_cast<int*>(types.data()), nullptr) < 0) {
+      return false;
+    }
   }
   return true;
 }
@@ -245,12 +325,19 @@ struct Remainder {
 };
 template <typename T>
 struct DivmodUFunc {
-  static std::vector<int> Types() {
+  static std::vector<int> TypeNums() {
+    return {
+        TypeDescriptor<T>::legacy_type_num, TypeDescriptor<T>::legacy_type_num,
+        TypeDescriptor<T>::legacy_type_num, TypeDescriptor<T>::legacy_type_num};
+  }
+  static constexpr int kIn = 2;
+  static constexpr int kOut = 2;
+  static std::vector<PyArray_DTypeMeta*> Dtypes() {
     return {TypeDescriptor<T>::Dtype(), TypeDescriptor<T>::Dtype(),
             TypeDescriptor<T>::Dtype(), TypeDescriptor<T>::Dtype()};
   }
-  static void Call(char** args, npy_intp* dimensions, npy_intp* steps,
-                   void* data) {
+  static void Call(char** args, const npy_intp* dimensions,
+                   const npy_intp* steps, void* data) {
     const char* i0 = args[0];
     const char* i1 = args[1];
     char* o0 = args[2];
@@ -268,6 +355,11 @@ struct DivmodUFunc {
       o0 += steps[2];
       o1 += steps[3];
     }
+  }
+  static void StridedLoop(PyArrayMethod_Context* context, char** args,
+                          const npy_intp* dimensions, const npy_intp* steps,
+                          void* data) {
+    return Call(args, dimensions, steps, data);
   }
 };
 template <typename T>

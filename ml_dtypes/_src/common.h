@@ -43,19 +43,21 @@ inline Safe_PyObjectPtr make_safe(PyObject* object) {
 template <typename T, typename Enable = void>
 struct TypeDescriptor {
   // typedef ... T;  // Representation type in memory for NumPy values of type
-  // static int Dtype() { return NPY_...; }  // Numpy type number for T.
+  // static constexpr int legacy_type_num = NPY_...; }  // Numpy type number for
+  // T
 };
 
 template <>
 struct TypeDescriptor<unsigned char> {
   typedef unsigned char T;
-  static int Dtype() { return NPY_UBYTE; }
+  static constexpr int legacy_type_num = NPY_UBYTE;
+  static PyArray_DTypeMeta* Dtype() { return &PyArray_UByteDType; }
 };
 
 template <>
 struct TypeDescriptor<unsigned short> {  // NOLINT
   typedef unsigned short T;              // NOLINT
-  static int Dtype() { return NPY_USHORT; }
+  static constexpr int legacy_type_num = NPY_USHORT;
 };
 
 // We register "int", "long", and "long long" types for portability across
@@ -64,97 +66,99 @@ struct TypeDescriptor<unsigned short> {  // NOLINT
 template <>
 struct TypeDescriptor<unsigned int> {
   typedef unsigned int T;
-  static int Dtype() { return NPY_UINT; }
+  static constexpr int legacy_type_num = NPY_UINT;
 };
 
 template <>
 struct TypeDescriptor<unsigned long> {  // NOLINT
   typedef unsigned long T;              // NOLINT
-  static int Dtype() { return NPY_ULONG; }
+  static constexpr int legacy_type_num = NPY_ULONG;
 };
 
 template <>
 struct TypeDescriptor<unsigned long long> {  // NOLINT
   typedef unsigned long long T;              // NOLINT
-  static int Dtype() { return NPY_ULONGLONG; }
+  static constexpr int legacy_type_num = NPY_ULONGLONG;
 };
 
 template <>
 struct TypeDescriptor<signed char> {
   typedef signed char T;
-  static int Dtype() { return NPY_BYTE; }
+  static constexpr int legacy_type_num = NPY_BYTE;
 };
 
 template <>
 struct TypeDescriptor<short> {  // NOLINT
   typedef short T;              // NOLINT
-  static int Dtype() { return NPY_SHORT; }
+  static constexpr int legacy_type_num = NPY_SHORT;
 };
 
 template <>
 struct TypeDescriptor<int> {
   typedef int T;
-  static int Dtype() { return NPY_INT; }
+  static constexpr int legacy_type_num = NPY_INT;
+  static PyArray_DTypeMeta* Dtype() { return &PyArray_IntDType; }
 };
 
 template <>
 struct TypeDescriptor<long> {  // NOLINT
   typedef long T;              // NOLINT
-  static int Dtype() { return NPY_LONG; }
+  static constexpr int legacy_type_num = NPY_LONG;
 };
 
 template <>
 struct TypeDescriptor<long long> {  // NOLINT
   typedef long long T;              // NOLINT
-  static int Dtype() { return NPY_LONGLONG; }
+  static constexpr int legacy_type_num = NPY_LONGLONG;
 };
 
 template <>
 struct TypeDescriptor<bool> {
   typedef unsigned char T;
-  static int Dtype() { return NPY_BOOL; }
+  static constexpr int legacy_type_num = NPY_BOOL;
+  static PyArray_DTypeMeta* Dtype() { return &PyArray_BoolDType; }
 };
 
 template <>
 struct TypeDescriptor<Eigen::half> {
   typedef Eigen::half T;
-  static int Dtype() { return NPY_HALF; }
+  static constexpr int legacy_type_num = NPY_HALF;
 };
 
 template <>
 struct TypeDescriptor<float> {
   typedef float T;
-  static int Dtype() { return NPY_FLOAT; }
+  static constexpr int legacy_type_num = NPY_FLOAT;
 };
 
 template <>
 struct TypeDescriptor<double> {
   typedef double T;
-  static int Dtype() { return NPY_DOUBLE; }
+  static constexpr int legacy_type_num = NPY_DOUBLE;
 };
 
 template <>
 struct TypeDescriptor<long double> {
   typedef long double T;
-  static int Dtype() { return NPY_LONGDOUBLE; }
+  static constexpr int legacy_type_num = NPY_LONGDOUBLE;
 };
 
 template <>
 struct TypeDescriptor<std::complex<float>> {
   typedef std::complex<float> T;
-  static int Dtype() { return NPY_CFLOAT; }
+  static constexpr int legacy_type_num = NPY_CFLOAT;
 };
 
 template <>
 struct TypeDescriptor<std::complex<double>> {
   typedef std::complex<double> T;
-  static int Dtype() { return NPY_CDOUBLE; }
+  static constexpr int legacy_type_num = NPY_CDOUBLE;
 };
 
 template <>
 struct TypeDescriptor<std::complex<long double>> {
   typedef std::complex<long double> T;
-  static int Dtype() { return NPY_CLONGDOUBLE; }
+  static constexpr int legacy_type_num = NPY_CLONGDOUBLE;
 };
 
 template <class T>

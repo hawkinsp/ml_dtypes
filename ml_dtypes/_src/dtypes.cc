@@ -48,6 +48,7 @@ struct TypeDescriptor<bfloat16> : CustomFloatType<bfloat16> {
   static constexpr bool is_integral = false;
   static constexpr const char* kTypeName = "bfloat16";
   static constexpr const char* kQualifiedTypeName = "ml_dtypes.bfloat16";
+  static constexpr const char* kDtypeName = "ml_dtypes.bfloat16_dtype";
   static constexpr const char* kTpDoc = "bfloat16 floating-point values";
   // We must register bfloat16 with a kind other than "f", because numpy
   // considers two types with the same kind and size to be equal, but
@@ -68,6 +69,7 @@ struct TypeDescriptor<float8_e3m4> : CustomFloatType<float8_e3m4> {
   static constexpr bool is_integral = false;
   static constexpr const char* kTypeName = "float8_e3m4";
   static constexpr const char* kQualifiedTypeName = "ml_dtypes.float8_e3m4";
+  static constexpr const char* kDtypeName = "ml_dtypes.float8_e3m4_dtype";
   static constexpr const char* kTpDoc = "float8_e3m4 floating-point values";
   // Set e3m4 kind as Void since kind=f (float) with itemsize=1 is used by e5m2
   static constexpr char kNpyDescrKind = 'V';  // Void
@@ -82,6 +84,7 @@ struct TypeDescriptor<float8_e4m3> : CustomFloatType<float8_e4m3> {
   static constexpr bool is_integral = false;
   static constexpr const char* kTypeName = "float8_e4m3";
   static constexpr const char* kQualifiedTypeName = "ml_dtypes.float8_e4m3";
+  static constexpr const char* kDtypeName = "ml_dtypes.float8_e4m3_dtype";
   static constexpr const char* kTpDoc = "float8_e4m3 floating-point values";
   // Set e4m3 kind as Void since kind=f (float) with itemsize=1 is used by e5m2
   static constexpr char kNpyDescrKind = 'V';       // Void
@@ -98,6 +101,8 @@ struct TypeDescriptor<float8_e4m3b11fnuz>
   static constexpr const char* kTypeName = "float8_e4m3b11fnuz";
   static constexpr const char* kQualifiedTypeName =
       "ml_dtypes.float8_e4m3b11fnuz";
+  static constexpr const char* kDtypeName =
+      "ml_dtypes.float8_e4m3b11fnuz_dtype";
   static constexpr const char* kTpDoc =
       "float8_e4m3b11fnuz floating-point values";
   // We must register float8_e4m3b11fnuz with a kind other than "f", because
@@ -119,6 +124,7 @@ struct TypeDescriptor<float8_e4m3fn> : CustomFloatType<float8_e4m3fn> {
   static constexpr bool is_integral = false;
   static constexpr const char* kTypeName = "float8_e4m3fn";
   static constexpr const char* kQualifiedTypeName = "ml_dtypes.float8_e4m3fn";
+  static constexpr const char* kDtypeName = "ml_dtypes.float8_e4m3fn_dtype";
   static constexpr const char* kTpDoc = "float8_e4m3fn floating-point values";
   // We must register float8_e4m3fn with a unique kind, because numpy
   // considers two types with the same kind and size to be equal.
@@ -138,6 +144,7 @@ struct TypeDescriptor<float8_e4m3fnuz> : CustomFloatType<float8_e4m3fnuz> {
   static constexpr bool is_integral = false;
   static constexpr const char* kTypeName = "float8_e4m3fnuz";
   static constexpr const char* kQualifiedTypeName = "ml_dtypes.float8_e4m3fnuz";
+  static constexpr const char* kDtypeName = "ml_dtypes.float8_e4m3fnuz_dtype";
   static constexpr const char* kTpDoc = "float8_e4m3fnuz floating-point values";
   static constexpr char kNpyDescrKind = 'V';
   // TODO(phawkins): there doesn't seem to be a way of guaranteeing a type
@@ -153,6 +160,7 @@ struct TypeDescriptor<float8_e5m2> : CustomFloatType<float8_e5m2> {
   static constexpr bool is_integral = false;
   static constexpr const char* kTypeName = "float8_e5m2";
   static constexpr const char* kQualifiedTypeName = "ml_dtypes.float8_e5m2";
+  static constexpr const char* kDtypeName = "ml_dtypes.float8_e5m2_dtype";
   static constexpr const char* kTpDoc = "float8_e5m2 floating-point values";
   // Treating e5m2 as the natural "float" type since it is IEEE-754 compliant.
   static constexpr char kNpyDescrKind = 'f';
@@ -169,6 +177,7 @@ struct TypeDescriptor<float8_e5m2fnuz> : CustomFloatType<float8_e5m2fnuz> {
   static constexpr bool is_integral = false;
   static constexpr const char* kTypeName = "float8_e5m2fnuz";
   static constexpr const char* kQualifiedTypeName = "ml_dtypes.float8_e5m2fnuz";
+  static constexpr const char* kDtypeName = "ml_dtypes.float8_e5m2fnuz_dtype";
   static constexpr const char* kTpDoc = "float8_e5m2fnuz floating-point values";
   static constexpr char kNpyDescrKind = 'V';
   // TODO(phawkins): there doesn't seem to be a way of guaranteeing a type
@@ -184,6 +193,7 @@ struct TypeDescriptor<float6_e2m3fn> : CustomFloatType<float6_e2m3fn> {
   static constexpr bool is_integral = false;
   static constexpr const char* kTypeName = "float6_e2m3fn";
   static constexpr const char* kQualifiedTypeName = "ml_dtypes.float6_e2m3fn";
+  static constexpr const char* kDtypeName = "ml_dtypes.float6_e2m3fn_dtype";
   static constexpr const char* kTpDoc = "float6_e2m3fn floating-point values";
   static constexpr char kNpyDescrKind = 'V';
   static constexpr char kNpyDescrType = '8';
@@ -197,6 +207,7 @@ struct TypeDescriptor<float6_e3m2fn> : CustomFloatType<float6_e3m2fn> {
   static constexpr bool is_integral = false;
   static constexpr const char* kTypeName = "float6_e3m2fn";
   static constexpr const char* kQualifiedTypeName = "ml_dtypes.float6_e3m2fn";
+  static constexpr const char* kDtypeName = "ml_dtypes.float6_e3m2fn_dtype";
   static constexpr const char* kTpDoc = "float6_e3m2fn floating-point values";
   static constexpr char kNpyDescrKind = 'V';
   static constexpr char kNpyDescrType = '9';
@@ -210,6 +221,7 @@ struct TypeDescriptor<float4_e2m1fn> : CustomFloatType<float4_e2m1fn> {
   static constexpr bool is_integral = false;
   static constexpr const char* kTypeName = "float4_e2m1fn";
   static constexpr const char* kQualifiedTypeName = "ml_dtypes.float4_e2m1fn";
+  static constexpr const char* kDtypeName = "ml_dtypes.float4_e2m1fn_dtype";
   static constexpr const char* kTpDoc = "float4_e2m1fn floating-point values";
   static constexpr char kNpyDescrKind = 'V';
   static constexpr char kNpyDescrType = '0';
@@ -223,6 +235,7 @@ struct TypeDescriptor<float8_e8m0fnu> : CustomFloatType<float8_e8m0fnu> {
   static constexpr bool is_integral = false;
   static constexpr const char* kTypeName = "float8_e8m0fnu";
   static constexpr const char* kQualifiedTypeName = "ml_dtypes.float8_e8m0fnu";
+  static constexpr const char* kDtypeName = "ml_dtypes.float8_e8m0fnu_dtype";
   static constexpr const char* kTpDoc = "float8_e8m0fnu floating-point values";
   static constexpr char kNpyDescrKind = 'V';
   // TODO(phawkins): there doesn't seem to be a way of guaranteeing a type
@@ -238,6 +251,7 @@ struct TypeDescriptor<int2> : IntNTypeDescriptor<int2> {
   static constexpr bool is_integral = true;
   static constexpr const char* kTypeName = "int2";
   static constexpr const char* kQualifiedTypeName = "ml_dtypes.int2";
+  static constexpr const char* kDtypeName = "ml_dtypes.int2_dtype";
   static constexpr const char* kTpDoc = "int2 integer values";
   static constexpr char kNpyDescrKind = 'V';
   // TODO(phawkins): there doesn't seem to be a way of guaranteeing a type
@@ -253,6 +267,7 @@ struct TypeDescriptor<uint2> : IntNTypeDescriptor<uint2> {
   static constexpr bool is_integral = true;
   static constexpr const char* kTypeName = "uint2";
   static constexpr const char* kQualifiedTypeName = "ml_dtypes.uint2";
+  static constexpr const char* kDtypeName = "ml_dtypes.uint2_dtype";
   static constexpr const char* kTpDoc = "uint2 integer values";
   static constexpr char kNpyDescrKind = 'V';
   // TODO(phawkins): there doesn't seem to be a way of guaranteeing a type
@@ -268,6 +283,7 @@ struct TypeDescriptor<int4> : IntNTypeDescriptor<int4> {
   static constexpr bool is_integral = true;
   static constexpr const char* kTypeName = "int4";
   static constexpr const char* kQualifiedTypeName = "ml_dtypes.int4";
+  static constexpr const char* kDtypeName = "ml_dtypes.int4_dtype";
   static constexpr const char* kTpDoc = "int4 integer values";
   static constexpr char kNpyDescrKind = 'V';
   // TODO(phawkins): there doesn't seem to be a way of guaranteeing a type
@@ -283,6 +299,7 @@ struct TypeDescriptor<uint4> : IntNTypeDescriptor<uint4> {
   static constexpr bool is_integral = true;
   static constexpr const char* kTypeName = "uint4";
   static constexpr const char* kQualifiedTypeName = "ml_dtypes.uint4";
+  static constexpr const char* kDtypeName = "ml_dtypes.uint4_dtype";
   static constexpr const char* kTpDoc = "uint4 integer values";
   static constexpr char kNpyDescrKind = 'V';
   // TODO(phawkins): there doesn't seem to be a way of guaranteeing a type
@@ -360,9 +377,19 @@ bool RegisterAllFloatCasts() {
 // Initialize type attribute in the module object.
 template <typename T>
 bool InitModuleType(PyObject* obj, const char* name) {
-  return PyObject_SetAttrString(
-             obj, name,
-             reinterpret_cast<PyObject*>(TypeDescriptor<T>::type_ptr)) >= 0;
+  if (PyObject_SetAttrString(obj, name,
+                             reinterpret_cast<PyObject*>(
+                                 TypeDescriptor<T>::scalar_type_ptr)) < 0) {
+    return false;
+  }
+  std::string s(name);
+  s += "_dtype";
+  if (PyObject_SetAttrString(
+          obj, s.c_str(),
+          reinterpret_cast<PyObject*>(&TypeDescriptor<T>::dtype)) < 0) {
+    return false;
+  }
+  return true;
 }
 
 }  // namespace
@@ -398,24 +425,24 @@ bool Initialize() {
     return false;
   }
 
-  if (!RegisterIntNDtype<int2>(numpy.get()) ||
-      !RegisterIntNDtype<uint2>(numpy.get()) ||
-      !RegisterIntNDtype<int4>(numpy.get()) ||
-      !RegisterIntNDtype<uint4>(numpy.get())) {
-    return false;
-  }
+  // if (!RegisterIntNDtype<int2>(numpy.get()) ||
+  //     !RegisterIntNDtype<uint2>(numpy.get()) ||
+  //     !RegisterIntNDtype<int4>(numpy.get()) ||
+  //     !RegisterIntNDtype<uint4>(numpy.get())) {
+  //   return false;
+  // }
 
   // Register casts between pairs of custom float dtypes.
-  bool success =
-      RegisterAllFloatCasts<bfloat16, float8_e3m4, float8_e4m3,
-                            float8_e4m3b11fnuz, float8_e4m3fn, float8_e4m3fnuz,
-                            float8_e5m2, float8_e5m2fnuz, float6_e2m3fn,
-                            float6_e3m2fn, float4_e2m1fn>();
-  // Only registering to/from BF16 and FP32 for float8_e8m0fnu.
-  success &= RegisterTwoWayCustomCast<float8_e8m0fnu, bfloat16, float>();
-  success &= RegisterTwoWayCustomCast<bfloat16, float8_e8m0fnu, float>();
-  success &= RegisterOneWayCustomCast<int2, int4, int8_t>();
-  success &= RegisterOneWayCustomCast<uint2, uint4, uint8_t>();
+  bool success = true;
+  //     RegisterAllFloatCasts<bfloat16, float8_e3m4, float8_e4m3,
+  //                           float8_e4m3b11fnuz, float8_e4m3fn,
+  //                           float8_e4m3fnuz, float8_e5m2, float8_e5m2fnuz,
+  //                           float6_e2m3fn, float6_e3m2fn, float4_e2m1fn>();
+  // // Only registering to/from BF16 and FP32 for float8_e8m0fnu.
+  // success &= RegisterTwoWayCustomCast<float8_e8m0fnu, bfloat16, float>();
+  // success &= RegisterTwoWayCustomCast<bfloat16, float8_e8m0fnu, float>();
+  // success &= RegisterOneWayCustomCast<int2, int4, int8_t>();
+  // success &= RegisterOneWayCustomCast<uint2, uint4, uint8_t>();
   return success;
 }
 
@@ -455,11 +482,13 @@ extern "C" EXPORT_SYMBOL PyObject* PyInit__ml_dtypes_ext() {
       !InitModuleType<float8_e5m2>(m.get(), "float8_e5m2") ||
       !InitModuleType<float8_e5m2fnuz>(m.get(), "float8_e5m2fnuz") ||
       !InitModuleType<float8_e8m0fnu>(m.get(), "float8_e8m0fnu") ||
-      !InitModuleType<bfloat16>(m.get(), "bfloat16") ||
-      !InitModuleType<int2>(m.get(), "int2") ||
-      !InitModuleType<int4>(m.get(), "int4") ||
-      !InitModuleType<uint2>(m.get(), "uint2") ||
-      !InitModuleType<uint4>(m.get(), "uint4")) {
+      !InitModuleType<bfloat16>(m.get(), "bfloat16")
+      // ||
+      // !InitModuleType<int2>(m.get(), "int2") ||
+      // !InitModuleType<int4>(m.get(), "int4") ||
+      // !InitModuleType<uint2>(m.get(), "uint2") ||
+      // !InitModuleType<uint4>(m.get(), "uint4")
+  ) {
     return nullptr;
   }
 
